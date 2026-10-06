@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Smart Plant Care</title>
+
+    <meta charset="UTF-8">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f1f8e9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #2e7d32;
+        }
+
+        h2 {
+            color: #388e3c;
+        }
+
+        select,
+        input[type="number"],
+        input[type="file"] {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-left: 5%;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        button {
+            padding: 12px 22px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #43a047;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2e7d32;
+        }
+
+        .voice-button {
+            background: #1976d2;
+        }
+
+        .voice-button:hover {
+            background: #0d47a1;
+        }
+
+        .info {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            color: #33691e;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>🌱 Smart Plant Care</h1>
+
+    <h2>📷 Upload Your Plant Photo</h2>
+
+
+    <form
+        action="/analyze"
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+
+        <!-- LANGUAGE -->
+
+        <label>
+            🌐 Select Language
+        </label>
+
+        <select name="language">
+
+            <option value="en">
+                🇬🇧 English
+            </option>
+
+            <option value="ta">
+                🇮🇳 தமிழ்
+            </option>
+
+            <option value="hi">
+                🇮🇳 हिन्दी
+            </option>
+
+        </select>
+
+
+        <!-- OBSERVATION DAY -->
+
+        <label>
+            📅 Observation Day
+        </label>
+
+        <input
+            type="number"
+            name="observation_day"
+            min="1"
+            placeholder="Example: 1, 3, 7, 14, 30..."
+            required
+        >
+
+
+        <div class="info">
+
+            🌱 Enter the day on which this photo was taken.
+
+            <br>
+
+            Example:
+            Day 1 → Day 3 → Day 7 → Day 14 → Day 30...
+
+        </div>
+
+
+        <!-- PLANT IMAGE -->
+
+        <label>
+            📷 Select Plant Photo
+        </label>
+
+        <input
+            type="file"
+            name="plant_image"
+            accept="image/*"
+            required
+        >
+
+
+        <br>
+
+
+        <!-- ANALYZE -->
+
+        <button type="submit">
+            🔍 Analyze Plant
+        </button>
+
+    </form>
+
+
+    <br>
+
+
+    <!-- VOICE -->
+
+    <button
+        type="button"
+        class="voice-button"
+        onclick="speakPage()"
+    >
+        🔊 Voice
+    </button>
+
+
+</div>
+
+
+<script>
+
+function speakPage() {
+
+    let language =
+        document.querySelector(
+            'select[name="language"]'
+        ).value;
+
+
+    let text =
+        document.querySelector(
+            '.container'
+        ).innerText;
+
+
+    let speech =
+        new SpeechSynthesisUtterance(text);
+
+
+    if (language === "ta") {
+
+        speech.lang = "ta-IN";
+
+    }
+
+    else if (language === "hi") {
+
+        speech.lang = "hi-IN";
+
+    }
+
+    else {
+
+        speech.lang = "en-IN";
+
+    }
+
+
+    speech.rate = 0.9;
+
+
+    window.speechSynthesis.cancel();
+
+    window.speechSynthesis.speak(speech);
+
+}
+
+</script>
+
+
+</body>
+</html>

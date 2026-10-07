@@ -20,6 +20,36 @@ DATABASE = "plant_growth.db"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 PLANTNET_API_KEY = os.getenv("PLANTNET_API_KEY")
+PERENUAL_API_KEY = os.getenv("PERENUAL_API_KEY")
+def get_perenual_plant(plant_name):
+    if not PERENUAL_API_KEY:
+        return None
+
+    try:
+        url = "https://perenual.com/api/v2/species-list"
+
+        response = requests.get(
+            url,
+            params={
+                "key": PERENUAL_API_KEY,
+                "q": plant_name
+            },
+            timeout=10
+        )
+
+        if response.status_code != 200:
+            return None
+
+        data = response.json()
+
+        if data.get("data"):
+            return data["data"][0]
+
+        return None
+
+    except Exception as e:
+        print("Perenual API Error:", e)
+        return None
 
 # ============================================================
 # TRANSLATIONS
@@ -1047,12 +1077,6 @@ def get_care_information(normal_name, language):
         "alert": "Check the plant regularly for signs of stress or disease."
     }
 
-# Alias used by earlier project versions
-def get_database_care(plant_info, language):
-    return get_care_information(
-        plant_info.get("name", ""),
-        language
-    )
 
 # ============================================================
 # HOME

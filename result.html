@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ t.result }}</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f8e9;
+            margin: 0;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #2e7d32;
+        }
+
+        .card,
+        .chart-container {
+            background: white;
+            margin: 18px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+            text-align: left;
+        }
+
+        .card h2,
+        .chart-container h2 {
+            color: #388e3c;
+            margin-top: 0;
+        }
+
+        .value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .care-item {
+            margin: 18px 0;
+            line-height: 1.6;
+        }
+
+        .voice-button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 22px;
+            background: #388e3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            text-align: left;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- TITLE -->
+
+    <h1>
+        {{ t.result }}
+    </h1>
+
+
+    <!-- VOICE -->
+
+    <button class="voice-button"
+            onclick="speakResult()">
+
+        {{ t.voice }}
+
+    </button>
+
+
+    <!-- PLANT NAME -->
+
+    <div class="card">
+
+        <h2>
+            {{ t.name }}
+        </h2>
+
+        <p class="value">
+            {{ plant_name }}
+        </p>
+
+    </div>
+
+
+    <!-- PLANT AREA -->
+
+    <div class="card">
+
+        <h2>
+            {{ t.area }}
+        </h2>
+
+        <p class="value">
+            {{ plant_pixels }} pixels
+        </p>
+
+    </div>
+
+
+    <!-- GROWTH -->
+
+    <div class="card">
+
+        <h2>
+            {{ t.growth }}
+        </h2>
+
+        <p class="value">
+            {{ growth }}%
+        </p>
+
+    </div>
+
+
+    <!-- GROWTH HISTORY -->
+
+    <div class="chart-container">
+
+        <h2>
+            {{ t.history }}
+        </h2>
+
+        <canvas id="growthChart"></canvas>
+
+        <p id="noGraphData"
+           style="display:none; text-align:center; color:#777;">
+            No growth history available yet.
+        </p>
+
+    </div>
+
+
+    <!-- CARE GUIDE -->
+
+    <div class="card">
+
+        <h2>
+            {{ t.care }}
+        </h2>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.water }}
+            </h3>
+
+            <p>
+                {{ care.water }}
+            </p>
+
+        </div>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.sunlight }}
+            </h3>
+
+            <p>
+                {{ care.sunlight }}
+            </p>
+
+        </div>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.soil }}
+            </h3>
+
+            <p>
+                {{ care.soil }}
+            </p>
+
+        </div>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.temperature }}
+            </h3>
+
+            <p>
+                {{ care.temperature }}
+            </p>
+
+        </div>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.nutrients }}
+            </h3>
+
+            <p>
+                {{ care.nutrients }}
+            </p>
+
+        </div>
+
+
+        <div class="care-item">
+
+            <h3>
+                {{ t.alert }}
+            </h3>
+
+            <p>
+                {{ care.alert }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a class="back-button"
+       href="/">
+
+        {{ t.back }}
+
+    </a>
+
+</div>
+
+
+<script>
+
+    // =================================================
+    // GROWTH GRAPH
+    // =================================================
+
+    const graphData =
+        {{ graph_data | default([], true) | tojson }};
+
+
+    if (graphData && graphData.length > 0) {
+
+        const labels =
+            graphData.map(
+                item => item.label
+            );
+
+
+        const growthValues =
+            graphData.map(
+                item => item.growth
+            );
+
+
+        const ctx =
+            document.getElementById(
+                "growthChart"
+            );
+
+
+        new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [{
+
+                    label: "Growth %",
+
+                    data: growthValues,
+
+                    borderWidth: 3,
+
+                    tension: 0.3,
+
+                    fill: false,
+
+                    pointRadius: 5
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Growth %"
+
+                        }
+
+                    },
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Observation"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+    else {
+
+        document.getElementById(
+            "growthChart"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "noGraphData"
+        ).style.display = "block";
+
+    }
+
+
+    // =================================================
+    // VOICE
+    // =================================================
+
+    function speakResult() {
+
+        let text =
+            document.body.innerText;
+
+
+        let language =
+            "{{ language | default('en', true) }}";
+
+
+        let voiceLanguage =
+            "en-IN";
+
+
+        if (language === "ta") {
+
+            voiceLanguage = "ta-IN";
+
+        }
+
+
+        if (language === "hi") {
+
+            voiceLanguage = "hi-IN";
+
+        }
+
+
+        let speech =
+            new SpeechSynthesisUtterance(
+                text
+            );
+
+
+        speech.lang =
+            voiceLanguage;
+
+
+        speech.rate =
+            0.9;
+
+
+        speech.pitch =
+            1;
+
+
+        window.speechSynthesis.cancel();
+
+
+        window.speechSynthesis.speak(
+            speech
+        );
+
+    }
+
+</script>
+
+</body>
+
+</html>
